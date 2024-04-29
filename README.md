@@ -9,3 +9,5 @@ project I would use an ORM as it would provide safeguards against bad SQL.
 
 To make designing the UI quicker I decided to utilize TailwindCSS, which integrated nicely with blade. For testing, I'm using PHPUnit
 as it's what I use in my current position.
+
+When reviewing this submission, please take into account that I didn't have a lot of time to finish everything :)

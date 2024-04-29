@@ -5,8 +5,6 @@ namespace Tests\Feature;
 use App\Repositories\PropertyRepository;
 use Tests\TestCase;
 
-;
-
 class PropertyRepositoryTest extends TestCase
 {
     public PropertyRepository $propertyRepository;

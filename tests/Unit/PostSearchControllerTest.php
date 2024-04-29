@@ -7,9 +7,8 @@ use App\Repositories\PropertyRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
-use function PHPUnit\Framework\assertSame;
 
-class ExampleTest extends TestCase
+class PostSearchControllerTest extends TestCase
 {
     public PostSearchController $postSearchController;
 
@@ -31,4 +30,6 @@ class ExampleTest extends TestCase
         Session::shouldReceive('session');
         self::assertTrue(true);
     }
+
+//    Not enough time to implement more test scenarios, but it would of course be good to fully test the search & allProperties
 }

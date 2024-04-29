@@ -11,6 +11,7 @@
 <div class="min-h-screen flex flex-col items-center justify-center space-y-2">
     <h1 class="text-3xl pb-4">Properties</h1>
     <div class="space-y-4 rounded-lg">
+{{--   If given more time, I'd seperate this item into it's own template     --}}
         @foreach($locations as $location)
             <div class="w-full p-3 flex flex-col max-w-sm rounded-lg overflow-hidden listing">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">

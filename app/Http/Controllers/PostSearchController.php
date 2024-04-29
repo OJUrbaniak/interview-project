@@ -1,29 +1,21 @@
 <?php
 namespace App\Http\Controllers;
 use App\Repositories\PropertyRepository;
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-
-//use PropertyRepository;
 
 class PostSearchController extends Controller
 {
     private PropertyRepository $propertyRepo;
 
-    /**
-     * @param PropertyRepository|null $propertyRepo
-     */
     public function __construct(
         ?PropertyRepository $propertyRepo
     ) {
-//      Dependency injection to enable easier testing
         $this->propertyRepo = $propertyRepo ?? new PropertyRepository();
     }
 
