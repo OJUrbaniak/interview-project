@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Interfaces\PropertyInterface;
 use App\Repositories\PropertyRepository;
 use Closure;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Psr\Container\NotFoundExceptionInterface;
 
 class PostSearchController extends Controller
 {
-    private PropertyRepository $propertyRepo;
+    private PropertyInterface $propertyRepo;
 
     public function __construct(
         ?PropertyRepository $propertyRepo

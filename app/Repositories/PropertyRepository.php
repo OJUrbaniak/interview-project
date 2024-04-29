@@ -12,7 +12,7 @@ class PropertyRepository implements PropertyInterface
 {
     public $totalPages;
 
-    public function getAllProperties()
+    public function getAllProperties(): array
     {
         return DB::select(
             <<<SQL
@@ -47,7 +47,7 @@ class PropertyRepository implements PropertyInterface
         int $bedsMin = null,
         string $fromDate = null,
         string $toDate = null,
-    ) {
+    ): array {
         $sql = <<<SQL
             SELECT DISTINCT
                 l.location_name,
