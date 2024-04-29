@@ -2,8 +2,15 @@
 namespace App\Http\Controllers;
 use App\Repositories\PropertyRepository;
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
 //use PropertyRepository;
 
 class PostSearchController extends Controller
@@ -16,7 +23,7 @@ class PostSearchController extends Controller
     public function __construct(
         ?PropertyRepository $propertyRepo
     ) {
-//      Dependency injection for easier testing
+//      Dependency injection to enable easier testing
         $this->propertyRepo = $propertyRepo ?? new PropertyRepository();
     }
 
@@ -27,14 +34,16 @@ class PostSearchController extends Controller
 
     public function search(Request $request)
     {
+        $formData = $this->handleFormData($request);
+
         $res = $this->propertyRepo->getPropertiesWithFilter(
-            $request->input('location'),
-            $request->input('near_beach'),
-            $request->input('accepts_pets'),
-            $request->input('sleeps_min'),
-            $request->input('beds_min'),
-            $request->input('availability_start'),
-            $request->input('availability_end'),
+            $formData['location'] ?? null,
+            $formData['near_beach'] ?? null,
+            $formData['accepts_pets'] ?? null,
+            intval($formData['sleeps_min']) ?? null,
+            intval($formData['beds_min']) ?? null,
+            $formData['availability_start'] ?? null,
+            $formData['availability_end'] ?? null,
         );
 
         if (empty($res)) {
@@ -43,7 +52,16 @@ class PostSearchController extends Controller
             Log::info("No properties match", $request->input());
         }
 
-        return view('list', ['locations' => $res, 'available' => true]);
+        $res = collect($res);
+
+        $page = Paginator::resolveCurrentPage();
+        $pages = new LengthAwarePaginator($res->forPage($page, 2), $res->count(), 2, $page, ['path' => Paginator::resolveCurrentPath()]);
+
+        return view('list',
+            ['source' => 'search',
+                'locations' => $pages->items(),
+                'available' => true,
+                'pages' => range(1, $pages->lastPage())]);
     }
 
     public function allProperties()
@@ -56,6 +74,36 @@ class PostSearchController extends Controller
             Log::info("No properties in table");
         }
 
-        return view('list', ['locations' => $res]);
+        $res = collect($res);
+
+        $page = Paginator::resolveCurrentPage();
+        $pages = new LengthAwarePaginator($res->forPage($page, 2),
+            $res->count(),
+            2,
+            $page,
+            ['path' => Paginator::resolveCurrentPath()]);
+
+        return view('list',
+            ['source' => 'all', 'locations' => $pages->items(), 'pages' => range(1, $pages->lastPage())]
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Closure|mixed|object|null
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function handleFormData(Request $request): mixed
+    {
+        $formData = [];
+        //        Save form data
+        if ($request->method() === 'POST') {
+            session(['formData' => $request->input()]);
+            $formData = $request->input();
+        } elseif ($request->method() === 'GET') {
+            $formData = session()->get('formData');
+        }
+        return $formData;
     }
 }

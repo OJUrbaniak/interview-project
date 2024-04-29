@@ -68,6 +68,14 @@
         @endforeach
     </div>
     <a href="{{url('')}}">Back</a>
+    @if(isset($pages) && count($pages) > 1)
+    <div class="flex flex-row space-x-3">
+        <p>Pages: </p>
+        @foreach($pages as $page)
+        <a href="{{url("$source?page=$page")}}">{{$page}}</a>
+        @endforeach
+    </div>
+    @endif
 </div>
 </body>
 </html>

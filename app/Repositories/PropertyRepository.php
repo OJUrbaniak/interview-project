@@ -3,20 +3,28 @@
 namespace App\Repositories;
 use App\Interfaces\PropertyInterface;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class PropertyRepository implements PropertyInterface
 {
-    /**
-     * @return array
-     */
-    public function getAllProperties(): array
+    public $totalPages;
+
+    public function getAllProperties()
     {
         return DB::select(
             <<<SQL
-            SELECT l.location_name, p.* FROM sykes_interview.properties p
-            INNER JOIN sykes_interview.locations l on p._fk_location = l.__pk
+            SELECT
+                l.location_name,
+                p.property_name,
+                p.near_beach,
+                p.accepts_pets,
+                p.sleeps,
+                p.beds 
+            FROM sykes_interview.properties p
+            LEFT JOIN sykes_interview.locations l on p._fk_location = l.__pk
             SQL
         );
     }
@@ -27,8 +35,8 @@ class PropertyRepository implements PropertyInterface
      * @param bool $acceptsPets
      * @param int|null $sleepsMin
      * @param int|null $bedsMin
-     * @param Date|null $fromDate
-     * @param Date|null $toDate
+     * @param string|null $fromDate
+     * @param string|null $toDate
      * @return mixed
      */
     public function getPropertiesWithFilter(
@@ -39,12 +47,18 @@ class PropertyRepository implements PropertyInterface
         int $bedsMin = null,
         string $fromDate = null,
         string $toDate = null,
-    ): array
-    {
+    ) {
         $sql = <<<SQL
-            SELECT DISTINCT l.location_name, p.* FROM sykes_interview.properties p
+            SELECT DISTINCT
+                l.location_name,
+                p.property_name,
+                p.near_beach,
+                p.accepts_pets,
+                p.sleeps,
+                p.beds 
+            FROM sykes_interview.properties p
             INNER JOIN sykes_interview.locations l on p._fk_location = l.__pk
-            INNER JOIN sykes_interview.bookings b on p.`__pk` = b.`_fk_property` 
+            LEFT JOIN sykes_interview.bookings b on p.`__pk` = b.`_fk_property` 
             SQL;
 
         if ($location) {
@@ -80,13 +94,19 @@ class PropertyRepository implements PropertyInterface
 
         if ($fromDate && $toDate) {
             $sql .= <<<SQL
-            \nAND NOT ('$fromDate' <= b.end_date AND '$toDate' >= b.start_date);
+            \nAND (
+                b.start_date IS NULL 
+                OR
+                NOT ('$fromDate' <= b.end_date AND '$toDate' >= b.start_date)
+            )
             SQL;
         }
 
+//        For a more complex implementation, an object to store property would be preferred
+
         return DB::select(
             $sql,
-            [$location]
+            $location ? [$location] : []
         );
     }
 }

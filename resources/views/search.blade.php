@@ -101,9 +101,11 @@
                             type="date">
                     </div>
                 </div>
-                <button name="submit" type='submit' class="block w-full bg-gray-900 text-white rounded-lg">Submit
-                </button>
+                <button name="submit" type='submit' class="block w-full bg-gray-900 text-white rounded-lg">Submit</button>
             </form>
+            <a href="{{url('all')}}">
+                <button name="all-properties" class="block w-full bg-gray-900 text-white rounded-lg">All properties</button>
+            </a>
         </div>
     </div>
 </body>

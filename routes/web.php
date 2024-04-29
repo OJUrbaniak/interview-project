@@ -9,3 +9,4 @@ Route::get('/', function () {
 
 Route::get('/all', [PostSearchController::class, 'allProperties']);
 Route::post('search', [PostSearchController::class, 'search']);
+Route::get('search', [PostSearchController::class, 'search']);
